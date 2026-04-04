@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+ 
+
+ <div class="logo" style="text-align: center;margin-bottom: -5px;">
+        <img src="welcome.jpg" alt="الشعار" width="400" height="180" onerror="this.style.display='none'">
+    </div>
+
+
+
+<!-- نظام الصلاحية -->
+<div id="accessSystem" style="display:none;">
+  <div style="max-width:400px; margin:10px auto; padding:30px; background:white; border-radius:10px; box-shadow:0 5px 20px rgba(0,0,0,0.1); text-align:center;">
+    <h2 style="color:#217fa7;">الدخول إلى شاشة العرض</h2>
+   
+    <!-- شاشة إدخال البريد -->
+    <div id="emailInputScreen">
+      <p style="margin-bottom:20px; color:#555;">الرجاء إدخال بريدك الإلكتروني للتحقق من الصلاحية</p>
+      <input type="email" id="userEmail" placeholder="البريد الإلكتروني" 
+             style="width:80%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:5px; text-align:center;">
+      <button onclick="checkUserAccess()" 
+              style="background:#217fa7; color:white; border:none; padding:12px 30px; border-radius:5px; cursor:pointer;font-weight: bold;">
+        تحقق من الصلاحية
+      </button>
+    </div>
+    
+    <!-- شاشة طلب الصلاحية -->
+    <div id="requestAccessScreen" style="display:none;">
+      <h3 style="color:#e74c3c;">⚠️ لا تملك صلاحية الدخول</h3>
+      <p id="accessStatusMsg" style="color:#666; margin-bottom:20px;"></p>
+      
+      <div style="background:#f8f9fa; padding:20px; border-radius:8px; margin-bottom:20px;">
+        <p style="margin-bottom:10px;"><strong>طلب صلاحية جديد:</strong></p>
+        <input type="text" id="userName" placeholder="الاسم الكامل" 
+               style="width:90%; padding:10px; margin-bottom:10px; border:1px solid #ddd; border-radius:5px;">
+        <input type="email" id="requestEmail" placeholder="البريد الإلكتروني" 
+               style="width:90%; padding:10px; margin-bottom:15px; border:1px solid #ddd; border-radius:5px;">
+        <button onclick="submitAccessRequest()" 
+        style="background:#28a745; color:white; border:none; padding:10px 25px; border-radius:5px; cursor:pointer;font-weight: bold;">
+  إرسال طلب الصلاحية
+</button>
+      </div>
+      
+      <button onclick="goBackToEmail()" 
+              style="background:#6c757d; color:white; border:none; padding:8px 20px; border-radius:5px; cursor:pointer; margin-top:10px;font-weight: bold;">
+        العودة للبريد الإلكتروني
+      </button>
+    </div>
+    
+    <!-- شاشة التحميل -->
+    <div id="loadingScreen" style="display:none;">
+      <div class="spinner" style="width:40px; height:40px; border:4px solid #ddd; border-top:4px solid #217fa7; border-radius:50%; margin:20px auto; animation:spin 1s linear infinite;"></div>
+      <p style="color:#217fa7;">جاري التحقق من الصلاحية...</p>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+   
+</style>
+    
+
+
+
+
+    <title>لوحة تحكم الأنشطة داخل المخيمات</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Calibri', Tahoma, Geneva, Verdana, Calibri;
+            background: linear-gradient(135deg, #1a7a92 0%, #6c8b96 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c7da0 0%, #1e4663 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            min-width: 200px;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #2c7da0;
+        }
+        
+        .stat-label {
+            color: #666;
+            margin-top: 10px;
+            font-size: 1.1em;
+        }
+        
+        .controls {
+            padding: 20px 30px;
+            background: white;
+            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 40px 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: #2c7da0;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #389150;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: #2c7da0;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1e5a74;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #219a52;
+        }
+        
+        .table-container {
+            padding: 30px;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+        
+        th {
+            background: #2c7da0;
+            color: white;
+            padding: 15px;
+            text-align: right;
+            font-weight: bold;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .pdf-link {
+            display: inline-block;
+            padding: 5px 12px;
+            background: #e74c3c;
+            color: white;
+            text-decoration: none;
+            border-radius: 15px;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        
+        .pdf-link:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
+        
+        .checkbox-col {
+            width: 40px;
+            text-align: center;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 18px;
+            color: #666;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2c7da0;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            text-align: center;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            th, td {
+                font-size: 12px;
+                padding: 8px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .stat-card {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+       
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 لوحة تحكم الأنشطة</h1>
+            <p>عرض وتقارير الأنشطة المنفذة داخل المخيمات</p>
+        </div>
+        
+        <div class="stats" id="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalActivities">0</div>
+                <div class="stat-label">إجمالي الأنشطة</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="بحث عن نشاط...">
+            </div>
+            <div>
+                <button class="btn btn-primary" onclick="refreshData()">
+                    <i class="fas fa-sync-alt"></i> تحديث
+                </button>
+                <button class="btn btn-success" onclick="generateSelectedReports()">
+                    <i class="fas fa-file-pdf"></i> إنشاء تقارير للمحدد
+                </button>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                جاري تحميل البيانات...
+            </div>
+            <div id="tableContent" style="display: none;"></div>
+        </div>
+    </div>
+    
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle">جاري إنشاء التقرير...</h3>
+            <p id="modalMessage">الرجاء الانتظار</p>
+            <div class="spinner" style="margin: 20px auto;"></div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzoAyN10o3Fn8vRP4_MHEVdWLkEUM2fU2Uut0Xdv4UgtP7kQdRZ6zCEHRwiqQcDT2r6Uw/exec';
+        
+        let activitiesData = [];
+        let selectedRows = new Set();
+        
+        function formatDate(dateString) {
+            if (!dateString || dateString === '-') return '-';
+            
+            let date = new Date(dateString);
+            if (isNaN(date.getTime())) {
+                let parts = dateString.split('/');
+                if (parts.length === 3) {
+                    date = new Date(parts[2], parts[1] - 1, parts[0]);
+                }
+            }
+            
+            if (!isNaN(date.getTime())) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+            
+            return dateString;
+        }
+        
+        window.onload = function() {
+            loadDashboardData();
+        };
+        
+        async function loadDashboardData() {
+            showLoading(true);
+            
+            try {
+                const response = await fetch(`${API_URL}?action=getData`);
+                const result = await response.json();
+                
+                if (result.success) {
+                   
+                    displayDashboardData(result);
+                } else {
+                    showError(result.error);
+                }
+            } catch (error) {
+                showError('فشل الاتصال بالسيرفر: ' + error.message);
+            }
+        }
+        
+        async function generateSingleReport(index) {
+            showModal('جاري إنشاء التقرير...', 'الرجاء الانتظار حتى اكتمال إنشاء ملف PDF');
+            
+            try {
+                const response = await fetch(`${API_URL}?action=createReport&index=${index}`);
+                const result = await response.json();
+                closeModal();
+                
+                if (result.success) {
+                    alert("تم إنشاء التقرير بنجاح");
+                    //showMessage('success', 'تم إنشاء التقرير بنجاح!');
+                    loadDashboardData();
+                    if (result.pdfUrl) {
+                        window.open(result.pdfUrl, '_blank');
+                    }
+                } else {
+                    showMessage('error', 'خطأ: ' + result.error);
+                }
+            } catch (error) {
+                closeModal();
+                showMessage('error', 'حدث خطأ: ' + error.message);
+                console.error('تفاصيل الخطأ:', error);
+            }
+        }
+        
+        async function generateSelectedReports() {
+            if (selectedRows.size === 0) {
+                showMessage('error', 'الرجاء تحديد نشاط واحد على الأقل');
+                return;
+            }
+            
+            const indices = Array.from(selectedRows);
+            showModal('جاري إنشاء التقارير...', `جاري إنشاء ${indices.length} تقرير...`);
+            
+            try {
+                const indicesParam = encodeURIComponent(JSON.stringify(indices));
+                const response = await fetch(`${API_URL}?action=createMultipleReports&indices=${indicesParam}`);
+                const result = await response.json();
+                closeModal();
+                
+                if (result.success) {
+                    const successCount = result.results.filter(r => r.success).length;
+                    showMessage('success', `تم إنشاء ${successCount} من ${indices.length} تقرير بنجاح`);
+                    loadDashboardData();
+                    selectedRows.clear();
+                } else {
+                    showMessage('error', 'خطأ: ' + result.error);
+                }
+            } catch (error) {
+                closeModal();
+                showMessage('error', 'حدث خطأ: ' + error.message);
+                console.error('تفاصيل الخطأ:', error);
+            }
+        }
+        
+        function displayDashboardData(result) {
+            showLoading(false);
+            activitiesData = result.data;
+            
+            document.getElementById('totalActivities').textContent = result.stats.totalActivities;
+            
+            renderTable();
+        }
+        
+        function convertDriveLink(url) {
+            if (!url) return '';
+            const match = url.match(/\/d\/(.*?)\//);
+            if (match && match[1]) {
+                return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+            }
+            return url;
+        }
+        
+        function renderTable() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filteredData = activitiesData.filter(activity => 
+                (activity.camp_name && activity.camp_name.toLowerCase().includes(searchTerm)) ||
+                (activity.gov && activity.gov.toLowerCase().includes(searchTerm)) ||
+                (activity.active_name && activity.active_name.toLowerCase().includes(searchTerm)) ||
+                (activity.person && activity.person.toLowerCase().includes(searchTerm))
+            );
+            
+            let tableHtml = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="checkbox-col"><input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll(this)"></th>
+                            <th>#</th>
+                            <th>المحافظة</th>
+                            <th>المخيم</th>
+                            <th>تاريخ النشاط</th>
+                            <th>اسم النشاط</th>
+                            <th>القائمين بالعمل</th>
+                            <th>عدد المستفيدين</th>
+                            <th>التقرير</th>
+                            <th>المرفقات</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            filteredData.forEach((activity, index) => {
+                const originalIndex = activitiesData.findIndex(a => a === activity);
+                const hasPDF = activity['PDF Link'] && activity['PDF Link'] !== '';
+                
+                // معالجة المرفقات كمصفوفة
+                let attachmentUrls = [];
+                let hasAttachment = false;
+                
+                if (activity['attachments_pdf']) {
+                    let rawAttachments = activity['attachments_pdf'];
+                    
+                    if (typeof rawAttachments === 'string') {
+                        attachmentUrls = rawAttachments.split('\n').filter(link => link && link.trim());
+                    } else if (Array.isArray(rawAttachments)) {
+                        attachmentUrls = rawAttachments;
+                    }
+                    
+                    attachmentUrls = attachmentUrls.map(url => convertDriveLink(url)).filter(url => url);
+                    hasAttachment = attachmentUrls.length > 0;
+                }
+                
+                const formattedDate = formatDate(activity.Dactive);
+                
+                tableHtml += `
+                    <tr>
+                        <td class="checkbox-col">
+                            <input type="checkbox" class="row-checkbox" data-index="${originalIndex}" ${selectedRows.has(originalIndex) ? 'checked' : ''} onclick="toggleRowSelection(${originalIndex})">
+                        </td>
+                        <td>${index + 1}</td>
+                        <td>${activity.gov || '-'}</td>
+                        <td>${activity.camp_name || '-'}</td>
+                        <td>${formattedDate}</td>
+                        <td>${activity.active_name || '-'}</td>
+                        <td>${activity.person || '-'}</td>
+                        <td>${activity.no_benfit || '0'}</td>
+                        <td>
+                            ${hasPDF ? 
+                                `<a href="${activity['PDF Link']}" target="_blank" class="pdf-link">
+                                    <i class="fas fa-file-pdf"></i> عرض PDF
+                                </a>` : 
+                                `<button class="btn btn-primary" onclick="generateSingleReport(${originalIndex})" style="padding: 5px 10px; font-size: 12px;">
+                                    <i class="fas fa-download"></i> إنشاء
+                                </button>`
+                            }
+                        </td>
+                        <td>
+                            ${hasAttachment ? 
+                                attachmentUrls.map((url, idx) => `
+                                    <a href="${url}" target="_blank" class="pdf-link" style="background: #3498db; display: inline-block; margin: 2px;">
+                                        <i class="fas fa-paperclip"></i> مرفق ${idx + 1}
+                                    </a>
+                                `).join(' ') : 
+                                `<span style="color: #999;">-</span>`
+                            }
+                        </td>
+                        <td>
+                            <button class="btn btn-primary" onclick="viewActivityDetails(${originalIndex})" style="padding: 5px 10px; font-size: 12px;">
+                                <i class="fas fa-eye"></i> تفاصيل
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableHtml += `</tbody>
+                </table>`;
+            
+            if (filteredData.length === 0) {
+                tableHtml = '<div style="text-align: center; padding: 50px;">لا توجد نتائج للبحث</div>';
+            }
+            
+            document.getElementById('tableContent').innerHTML = tableHtml;
+            document.getElementById('tableContent').style.display = 'block';
+        }
+        
+        function viewActivityDetails(index) {
+            const activity = activitiesData[index];
+            const formattedDate = formatDate(activity.Dactive);
+            
+            let attachmentsHtml = '-';
+            if (activity['attachments_pdf']) {
+                let rawAttachments = activity['attachments_pdf'];
+                let attachmentUrls = [];
+                if (typeof rawAttachments === 'string') {
+                    attachmentUrls = rawAttachments.split('\n').filter(link => link && link.trim());
+                } else if (Array.isArray(rawAttachments)) {
+                    attachmentUrls = rawAttachments;
+                }
+                attachmentUrls = attachmentUrls.map(url => convertDriveLink(url)).filter(url => url);
+                
+                if (attachmentUrls.length > 0) {
+                    attachmentsHtml = attachmentUrls.map((url, idx) => 
+                        `<a href="${url}" target="_blank" style="color: #3498db; display: inline-block; margin: 2px;">📎 مرفق ${idx + 1}</a>`
+                    ).join(' - ');
+                }
+            }
+            
+            const details = `
+                <div style="text-align: right;">
+                    <h3>تفاصيل النشاط</h3>
+                    <p><strong>المحافظة:</strong> ${activity.gov || '-'}</p>
+                    <p><strong>المخيم:</strong> ${activity.camp_name || '-'}</p>
+                    <p><strong>تاريخ النشاط:</strong> ${formattedDate}</p>
+                    <p><strong>اسم النشاط:</strong> ${activity.active_name || '-'}</p>
+                    <p><strong>وصف النشاط:</strong> ${activity.active_dis || '-'}</p>
+                    <p><strong>القائمين بالعمل:</strong> ${activity.person || '-'}</p>
+                    <p><strong>عدد المستفيدين:</strong> ${activity.no_benfit || '0'}</p>
+                    <p><strong>التوصيات:</strong> ${activity.recomen || '-'}</p>
+                    <p><strong>المرفقات:</strong> ${attachmentsHtml}</p>
+                    <p><strong>تاريخ الإدخال:</strong> ${activity.timestamp || '-'}</p>
+                </div>
+            `;
+            
+            document.getElementById('modalTitle').textContent = 'تفاصيل النشاط';
+            document.getElementById('modalMessage').innerHTML = details;
+            document.getElementById('modal').style.display = 'flex';
+            
+            const existingCloseBtn = document.querySelector('.modal-content .close-details-btn');
+            if (existingCloseBtn) existingCloseBtn.remove();
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.textContent = 'إغلاق';
+            closeBtn.className = 'btn btn-primary close-details-btn';
+            closeBtn.style.marginTop = '20px';
+            closeBtn.onclick = closeModal;
+            document.querySelector('.modal-content').appendChild(closeBtn);
+        }
+        
+        function toggleSelectAll(checkbox) {
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = checkbox.checked;
+                const index = parseInt(cb.getAttribute('data-index'));
+                if (checkbox.checked) {
+                    selectedRows.add(index);
+                } else {
+                    selectedRows.delete(index);
+                }
+            });
+        }
+        
+        function toggleRowSelection(index) {
+            if (selectedRows.has(index)) {
+                selectedRows.delete(index);
+            } else {
+                selectedRows.add(index);
+            }
+        }
+        
+        function refreshData() {
+            selectedRows.clear();
+            loadDashboardData();
+        }
+        
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+            document.getElementById('tableContent').style.display = show ? 'none' : 'block';
+        }
+        
+        function showError(error) {
+            showLoading(false);
+            document.getElementById('tableContent').innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 48px;"></i>
+                    <p>حدث خطأ: ${error}</p>
+                    <button class="btn btn-primary" onclick="loadDashboardData()">محاولة مرة أخرى</button>
+                </div>
+            `;
+            document.getElementById('tableContent').style.display = 'block';
+        }
+        
+        function showMessage(type, message) {
+            const modalContent = document.querySelector('.modal-content');
+            const originalContent = modalContent.innerHTML;
+            modalContent.innerHTML = `
+                <h3>${type === 'success' ? '✅ نجاح' : '❌ خطأ'}</h3>
+                <p>${message}</p>
+                <button class="btn btn-primary" onclick="closeModal()">إغلاق</button>
+            `;
+            document.getElementById('modal').style.display = 'flex';
+            setTimeout(() => {
+                closeModal();
+                modalContent.innerHTML = originalContent;
+            }, 3000);
+        }
+        
+        function showModal(title, message) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').innerHTML = `<p>${message}</p><div class="spinner" style="margin: 20px auto;"></div>`;
+            document.getElementById('modal').style.display = 'flex';
+        }
+        
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            const modalContent = document.querySelector('.modal-content');
+            modalContent.innerHTML = `
+                <h3 id="modalTitle">جاري إنشاء التقرير...</h3>
+                <p id="modalMessage">الرجاء الانتظار</p>
+                <div class="spinner" style="margin: 20px auto;"></div>
+            `;
+        }
+        
+        document.getElementById('searchInput').addEventListener('input', renderTable);
+    </script>
+
+    <script>
+// ========== نظام الصلاحية ==========
+// رابط Google Apps Script - ضع الرابط الذي نسخته من الخطوة 2 هنا
+const ACCESS_API_URL = "https://script.google.com/macros/s/AKfycbyLPf8qFelCoBhaZy7Ysnww1tI7hX_EbrmyJwEvHNdoT7fEjbNwcO0Gnb2nr_BGWBSP4w/exec";
+
+// عناصر النظام
+let currentEmail = localStorage.getItem('accessEmail') || '';
+
+// دالة بسيطة للتحقق من البريد الإلكتروني
+function isValidEmail(email) {
+  if (!email) return false;
+  if (!email.includes('@')) return false;
+  if (email.indexOf('@') === 0) return false;
+  const atIndex = email.indexOf('@');
+  if (!email.includes('.', atIndex)) return false;
+  const lastDotIndex = email.lastIndexOf('.');
+  if (lastDotIndex >= email.length - 1) return false;
+  return true;
+}
+
+// عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', function() {
+  // إخفاء المحتوى الرئيسي (الحاوية الرئيسية)
+  const mainContainer = document.querySelector('.container');
+  const statsSection = document.querySelector('.stats');
+  const controlsSection = document.querySelector('.controls');
+  const tableContainer = document.querySelector('.table-container');
+  
+  // إخفاء العناصر الرئيسية
+  if (mainContainer) mainContainer.style.display = 'none';
+  if (statsSection) statsSection.style.display = 'none';
+  if (controlsSection) controlsSection.style.display = 'none';
+  if (tableContainer) tableContainer.style.display = 'none';
+  
+  // إظهار نظام الصلاحية
+  const accessSystem = document.getElementById('accessSystem');
+  if (accessSystem) accessSystem.style.display = 'block';
+});
+
+// التحقق من صلاحية المستخدم
+async function checkUserAccess() {
+  const email = document.getElementById('userEmail').value.trim();
+  
+  if (!isValidEmail(email)) {
+    alert('❌ الرجاء إدخال بريد إلكتروني صحيح\nمثال: name@example.com');
+    return;
+  }
+  
+  const btn = document.querySelector('#emailInputScreen button');
+  const originalText = btn.textContent;
+  btn.textContent = 'جاري التحقق...';
+  btn.disabled = true;
+ 
+  try {
+    const response = await fetch(ACCESS_API_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'check',
+        email: email
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.access) {
+      // تمت الموافقة
+      localStorage.setItem('accessEmail', email);
+      localStorage.setItem('accessName', result.name || '');
+      
+      // إخفاء نظام الصلاحية
+      document.getElementById('accessSystem').style.display = 'none';
+       
+      // إظهار المحتوى الرئيسي
+      const mainContainer = document.querySelector('.container');
+      const statsSection = document.querySelector('.stats');
+      const controlsSection = document.querySelector('.controls');
+      const tableContainer = document.querySelector('.table-container');
+      
+      if (mainContainer) mainContainer.style.display = 'block';
+      if (statsSection) statsSection.style.display = 'flex';
+      if (controlsSection) controlsSection.style.display = 'flex';
+      if (tableContainer) tableContainer.style.display = 'block';
+      
+      // تحميل البيانات بعد الدخول
+      loadDashboardData();
+      
+      //showMessage(`مرحباً ${result.name || ''}! يمكنك الآن عرض البيانات.`, 'success');
+    } else {
+      // ليس لديه صلاحية
+      currentEmail = email;
+      
+      document.getElementById('emailInputScreen').style.display = 'none';
+      document.getElementById('requestAccessScreen').style.display = 'block';
+      document.getElementById('requestEmail').value = email;
+      
+      let statusMsg = 'ليس لديك صلاحية للدخول.';
+      if (result.status === 'pending') {
+        statusMsg = 'طلبك قيد المراجعة. سيتم إعلامك عند الموافقة.';
+      }
+      document.getElementById('accessStatusMsg').textContent = statusMsg;
+    }
+    
+  } catch (error) {
+    console.error('Error checking access:', error);
+    alert('حدث خطأ في الاتصال. الرجاء المحاولة مرة أخرى.');
+  } finally {
+    btn.textContent = originalText;
+    btn.disabled = false;
+  }
+}
+
+// إرسال طلب صلاحية
+async function submitAccessRequest() {
+  const name = document.getElementById('userName').value.trim();
+  const email = document.getElementById('requestEmail').value.trim();
+  
+  if (!name) {
+    alert('الرجاء إدخال الاسم الكامل');
+    return;
+  }
+  
+  if (!isValidEmail(email)) {
+    alert('❌ الرجاء إدخال بريد إلكتروني صحيح\nمثال: name@example.com');
+    return;
+  }
+  
+  const submitBtn = document.querySelector('#requestAccessScreen button[onclick="submitAccessRequest()"]');
+  const originalText = submitBtn.textContent;
+  submitBtn.textContent = 'جاري الإرسال...';
+  submitBtn.disabled = true;
+  
+  try {
+    const response = await fetch(ACCESS_API_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'request',
+        name: name,
+        email: email
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success || result.message) {
+      alert(result.message || 'تم إرسال طلب الصلاحية بنجاح');
+      goBackToEmail();
+    } else {
+      alert(result.error || 'حدث خطأ في إرسال الطلب');
+    }
+    
+  } catch (error) {
+    console.error('Error requesting access:', error);
+    alert('حدث خطأ في الاتصال. الرجاء المحاولة مرة أخرى.');
+  } finally {
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
+  }
+}
+
+// العودة لشاشة البريد
+function goBackToEmail() {
+  document.getElementById('requestAccessScreen').style.display = 'none';
+  document.getElementById('emailInputScreen').style.display = 'block';
+  document.getElementById('userEmail').value = currentEmail || '';
+}
+
+// تسجيل الخروج
+function logout() {
+  localStorage.removeItem('accessEmail');
+  localStorage.removeItem('accessName');
+  location.reload();
+}
+
+// دالة عرض الرسائل
+function showMessage(message, type) {
+  // يمكنك تخصيص هذه الدالة حسب الحاجة
+  alert(message);
+}
+
+// إضافة زر تسجيل الخروج
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(() => {
+    if (!document.querySelector('#logoutBtn')) {
+      const logoutBtn = document.createElement('button');
+      logoutBtn.id = 'logoutBtn';
+      logoutBtn.innerHTML = '🚪 تسجيل الخروج';
+      logoutBtn.style.cssText = 'position:fixed; top:10px; left:10px; background:#dc3545; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; z-index:10000; font-family:inherit;';
+      logoutBtn.onclick = logout;
+      document.body.appendChild(logoutBtn);
+    }
+  }, 1000);
+});
+</script>
+
+
+
+
+
+
+</body>
+</html>
