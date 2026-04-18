@@ -382,12 +382,11 @@
     </div>
     
     <script>
-       // const API_URL = 'https://script.google.com/macros/s/AKfycbzoAyN10o3Fn8vRP4_MHEVdWLkEUM2fU2Uut0Xdv4UgtP7kQdRZ6zCEHRwiqQcDT2r6Uw/exec';
-        //const API_URL = 'https://shiny-bush-d4eb.disability-erbil.workers.dev/';
+       
         const API_URL = 'https://dashboard-event-worker.disability-erbil.workers.dev/';
         let activitiesData = [];
         let selectedRows = new Set();
-        //const API_KEY = 'MOMDEventDashboard_SecretKey_koky123';
+        
 
         function formatDate(dateString) {
             if (!dateString || dateString === '-') return '-';
@@ -686,7 +685,7 @@
         detailsContainer.appendChild(p);
     });
 
-    // معالجة المرفقات بشكل آمن
+    // معالجة المرفقات 
     const attachmentsLabel = document.createElement('p');
     attachmentsLabel.innerHTML = '<strong>المرفقات:</strong> ';
     detailsContainer.appendChild(attachmentsLabel);
@@ -987,8 +986,7 @@ function logout() {
 
 // دالة عرض الرسائل
 function showMessage(message, type) {
-  // يمكنك تخصيص هذه الدالة حسب الحاجة
-  alert(message);
+   alert(message);
 }
 
 // إضافة زر تسجيل الخروج
@@ -1005,9 +1003,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }, 1000);
 });
 </script>
-
-
-
 
 
 
