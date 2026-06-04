@@ -492,7 +492,7 @@ function displayDashboardData(result) {
 
     showLoading(false);
 
-    let originalData = result.data;
+    const originalData = result.data;
 
     originalData.forEach((item, index) => {
         item._originalIndex = index;
@@ -579,8 +579,8 @@ function displayDashboardData(result) {
     const tbody = document.createElement('tbody');
     
     filteredData.forEach((activity, index) => {
-      
-        const originalIndex = activity._originalIndex;
+    //  const originalIndex = activitiesData.findIndex(a => a === activity);
+       const originalIndex = activity._originalIndex !== undefined ? activity._originalIndex : index;
         const hasPDF = activity['PDF Link'] && activity['PDF Link'] !== '';
         const formattedDate = formatDate(activity.Dactive);
 
