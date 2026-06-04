@@ -487,36 +487,44 @@
             }
         }
         
-        function displayDashboardData(result) {
+
+function displayDashboardData(result) {
 
     showLoading(false);
+
+    let originalData = result.data;
+
+    originalData.forEach((item, index) => {
+        item._originalIndex = index;
+    });
 
     const role = String(userRole || '').trim();
 
     if (role.includes('اربيل')) {
 
-        activitiesData = result.data.filter(item =>
+        activitiesData = originalData.filter(item =>
             String(item.gov || '').trim() === 'اربيل'
         );
 
-    }
-    else if (role.includes('دهوك')) {
+    } else if (role.includes('دهوك')) {
 
-        activitiesData = result.data.filter(item =>
+        activitiesData = originalData.filter(item =>
             String(item.gov || '').trim() === 'دهوك'
         );
 
+    } else {
+
+        activitiesData = originalData;
+
     }
-    else {
 
-        activitiesData = result.data;
-
-    }
-
-    document.getElementById('totalActivities').textContent = activitiesData.length;
+    document.getElementById('totalActivities').textContent =
+        activitiesData.length;
 
     renderTable();
 }
+
+        
         
         function convertDriveLink(url) {
             if (!url) return '';
@@ -571,7 +579,8 @@
     const tbody = document.createElement('tbody');
     
     filteredData.forEach((activity, index) => {
-        const originalIndex = activitiesData.findIndex(a => a === activity);
+      
+        const originalIndex = activity._originalIndex;
         const hasPDF = activity['PDF Link'] && activity['PDF Link'] !== '';
         const formattedDate = formatDate(activity.Dactive);
 
