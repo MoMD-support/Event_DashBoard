@@ -489,16 +489,16 @@
         
         function displayDashboardData(result) {
             showLoading(false);
-             if (userRole === 'Erbil') {
+             if (userRole === 'اربيل') {
 
                         activitiesData = result.data.filter(item =>
-                            String(item.gov || '').trim() === 'Erbil'
+                            String(item.gov || '').trim() === 'اربيل'
                         );
 
-                    } else if (userRole === 'Duhok') {
+                    } else if (userRole === 'دهوك') {
 
                         activitiesData = result.data.filter(item =>
-                            String(item.gov || '').trim() === 'Duhok'
+                            String(item.gov || '').trim() === 'دهوك'
                         );
 
                     } else {
