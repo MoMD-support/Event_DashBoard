@@ -385,6 +385,7 @@
       
         const API_URL = 'https://dashboard-event-worker.disability-erbil.workers.dev/';
         let activitiesData = [];
+        let userRole = localStorage.getItem('userRole') || 'Manager';
         let selectedRows = new Set();
        
 
@@ -488,7 +489,26 @@
         
         function displayDashboardData(result) {
             showLoading(false);
-            activitiesData = result.data;
+             if (userRole === 'Erbil') {
+
+                        activitiesData = result.data.filter(item =>
+                            String(item.gov || '').trim() === 'Erbil'
+                        );
+
+                    } else if (userRole === 'Duhok') {
+
+                        activitiesData = result.data.filter(item =>
+                            String(item.gov || '').trim() === 'Duhok'
+                        );
+
+                    } else {
+
+                        activitiesData = result.data;
+
+                    }
+
+
+            
             
             document.getElementById('totalActivities').textContent = result.stats.totalActivities;
             
@@ -874,7 +894,8 @@ async function checkUserAccess() {
       // تمت الموافقة
       localStorage.setItem('accessEmail', email);
       localStorage.setItem('accessName', result.name || '');
-      
+      localStorage.setItem('userRole', result.role || 'Manager');
+        
       // إخفاء نظام الصلاحية
       document.getElementById('accessSystem').style.display = 'none';
        
