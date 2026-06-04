@@ -488,32 +488,35 @@
         }
         
         function displayDashboardData(result) {
-            showLoading(false);
-             if (userRole === 'اربيل') {
 
-                        activitiesData = result.data.filter(item =>
-                            String(item.gov || '').trim() === 'اربيل'
-                        );
+    showLoading(false);
 
-                    } else if (userRole === 'دهوك') {
+    const role = String(userRole || '').trim();
 
-                        activitiesData = result.data.filter(item =>
-                            String(item.gov || '').trim() === 'دهوك'
-                        );
+    if (role.includes('اربيل')) {
 
-                    } else {
+        activitiesData = result.data.filter(item =>
+            String(item.gov || '').trim() === 'اربيل'
+        );
 
-                        activitiesData = result.data;
+    }
+    else if (role.includes('دهوك')) {
 
-                    }
+        activitiesData = result.data.filter(item =>
+            String(item.gov || '').trim() === 'دهوك'
+        );
 
+    }
+    else {
 
-            
-            
-            document.getElementById('totalActivities').textContent = result.stats.totalActivities;
-            
-            renderTable();
-        }
+        activitiesData = result.data;
+
+    }
+
+    document.getElementById('totalActivities').textContent = activitiesData.length;
+
+    renderTable();
+}
         
         function convertDriveLink(url) {
             if (!url) return '';
@@ -895,6 +898,7 @@ async function checkUserAccess() {
       localStorage.setItem('accessEmail', email);
       localStorage.setItem('accessName', result.name || '');
       localStorage.setItem('userRole', result.role || 'عامة');
+        userRole = result.role || 'عامة';
         
       // إخفاء نظام الصلاحية
       document.getElementById('accessSystem').style.display = 'none';
