@@ -506,12 +506,15 @@
         
        function renderTable() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const filteredData = activitiesData.filter(activity => 
-        (activity.camp_name && activity.camp_name.toLowerCase().includes(searchTerm)) ||
-        (activity.gov && activity.gov.toLowerCase().includes(searchTerm)) ||
-        (activity.active_name && activity.active_name.toLowerCase().includes(searchTerm)) ||
-        (activity.person && activity.person.toLowerCase().includes(searchTerm))
+
+    const filteredData = activitiesData.filter(activity =>
+        String(activity.camp_name || '').toLowerCase().includes(searchTerm) ||
+        String(activity.gov || '').toLowerCase().includes(searchTerm) ||
+        String(activity.active_name || '').toLowerCase().includes(searchTerm) ||
+        String(activity.person || '').toLowerCase().includes(searchTerm)
     );
+
+   
     
     const tableContent = document.getElementById('tableContent');
     tableContent.innerHTML = ''; // نبدأ بجدول فارغ
