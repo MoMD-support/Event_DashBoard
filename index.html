@@ -663,21 +663,7 @@ rowData.forEach((value, colIndex) => { const td = document.createElement('td');
     }
     row.appendChild(td);
 });
-// باقي الأعمدة
-        const cellData = [
-            index + 1,
-            activity.gov || '-',
-            activity.camp_name || '-',
-            formattedDate,
-            activity.active_name || '-',
-            activity.person || '-',
-            activity.no_benfit || '0'
-        ];
-        cellData.forEach(text => {
-            const td = document.createElement('td');
-            td.textContent = text; // <-- استخدام textContent هو الحل
-            row.appendChild(td);
-        });
+
 
         // عمود التقرير
         const reportCell = document.createElement('td');
