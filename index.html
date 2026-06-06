@@ -880,6 +880,8 @@ async function saveActivityEdit(
 
         const result = await response.json();
 
+        console.log("UPDATE RESULT:", result);
+
         showLoading(false);
 
         if (result.success) {
