@@ -387,8 +387,8 @@
         let activitiesData = [];
         let userRole = localStorage.getItem('userRole') || 'عامة';
         let selectedRows = new Set();
+        let editingRow = null;
        
-
         function formatDate(dateString) {
             if (!dateString || dateString === '-') return '-';
             
