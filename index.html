@@ -584,6 +584,8 @@ function displayDashboardData(result) {
     const tbody = document.createElement('tbody');
     
     filteredData.forEach((activity, index) => {
+        console.log("ROW DATA:", activity);
+console.log("ID FIELD:", activity.ID);
     //  const originalIndex = activitiesData.findIndex(a => a === activity);
        const originalIndex = activity._originalIndex !== undefined ? activity._originalIndex : index;
         const hasPDF = activity['PDF Link'] && activity['PDF Link'] !== '';
