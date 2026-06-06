@@ -833,6 +833,8 @@ function editActivity(activityId){
     );
 
     if (newBeneficiaries === null) return;
+console.log("SAVE CLICKED");
+console.log("Activity ID =", activityId);
 
     saveActivityEdit(
         activityId,
@@ -849,7 +851,7 @@ async function saveActivityEdit(
     person,
     beneficiaries
 ) {
-
+ console.log("saveActivityEdit STARTED");
     try {
 
         showLoading(true);
