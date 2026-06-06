@@ -517,7 +517,11 @@ function displayDashboardData(result) {
         activitiesData = originalData;
 
     }
+    // ترتيب البيانات من الاحدث الى الاقدم حسب تاريخ النشاط
+            activitiesData.sort((a, b) => { return new Date(b.Dactive) - new Date(a.Dactive);
+                });
 
+ // لعرض عدد السجلات
     document.getElementById('totalActivities').textContent =
         activitiesData.length;
 
