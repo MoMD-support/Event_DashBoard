@@ -712,7 +712,15 @@ rowData.forEach((value) => {
         detailsButton.className = 'btn btn-primary';
         detailsButton.style.cssText = 'padding: 5px 10px; font-size: 12px;';
         detailsButton.innerHTML = '<i class="fas fa-eye"></i> تفاصيل';
-        detailsButton.onclick = () => viewActivityDetails(originalIndex);
+       detailsButton.onclick = () => {
+  
+    const correctIndex = activitiesData.findIndex(a => String(a.ID) === String(activity.ID));
+    if (correctIndex !== -1) {
+        viewActivityDetails(correctIndex);
+    } else {
+        alert('حدث خطأ: لم يتم العثور على النشاط');
+    }
+};
        
         actionsCell.appendChild(detailsButton);
 
@@ -920,17 +928,7 @@ console.log("Saving activity with ID:", activityId);
         showLoading(false);
 
         if (result.success) {
-             const activityIndex = activitiesData.findIndex(a => String(a.ID) === String(activityId));
-    if (activityIndex !== -1) {
-        activitiesData[activityIndex].active_name = activeName;
-        activitiesData[activityIndex].person = person;
-        activitiesData[activityIndex].no_benfit = beneficiaries;
-        activitiesData[activityIndex].Dactive = activityDate;
-        activitiesData[activityIndex].pactive = manager;
-        activitiesData[activityIndex].active_dis = description;
-        activitiesData[activityIndex].recomen = recommendation;
-    }
-
+           
             alert('تم حفظ التعديلات');
 
             closeEditModal();
