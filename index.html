@@ -413,45 +413,34 @@
     </div>
     
     <script>
-      
+
+        function formatDate(dateString) {
+            if (!dateString || dateString === '-') return '-';
+            
+            let date = new Date(dateString);
+            if (isNaN(date.getTime())) {
+                let parts = dateString.split('/');
+                if (parts.length === 3) {
+                    date = new Date(parts[2], parts[1] - 1, parts[0]);
+                }
+            }
+            
+            if (!isNaN(date.getTime())) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+            
+            return dateString;
+        }
         const API_URL = 'https://dashboard-event-worker.disability-erbil.workers.dev/';
         let activitiesData = [];
         let userRole = localStorage.getItem('userRole') || 'عامة';
         let selectedRows = new Set();
        
 
-        function formatDate(dateString) {
-    if (!dateString || dateString === '-') return '-';
-    
-    let date = new Date(dateString);
-    
-    // إذا كان التاريخ غير صالح، حاول معالجته
-    if (isNaN(date.getTime())) {
-        let parts = dateString.split('/');
-        if (parts.length === 3) {
-            date = new Date(parts[2], parts[1] - 1, parts[0]);
-        }
-    }
-    
-    // إذا كان التاريخ لا يزال غير صالح، حاول استخراج التاريخ من الصيغة الطويلة
-    if (isNaN(date.getTime()) && dateString.includes('T')) {
-        // استخراج الجزء الأول فقط (yyyy-mm-dd)
-        const extractedDate = dateString.split('T')[0];
-        if (extractedDate && extractedDate.match(/^\d{4}-\d{2}-\d{2}/)) {
-            return extractedDate;
-        }
-    }
-    
-    if (!isNaN(date.getTime())) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
-    
-    return dateString;
-}
-        
+       
         window.onload = function() {
             loadDashboardData();
         };
