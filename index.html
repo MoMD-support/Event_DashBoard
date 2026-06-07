@@ -646,18 +646,14 @@ function displayDashboardData(result) {
     activity.no_benfit || ''
 ];
 
-rowData.forEach((value, colIndex) => { const td = document.createElement('td');
+rowData.forEach((value) => {
 
-     {
+    const td = document.createElement('td');
 
-        const input = document.createElement('input');
-        input.type = colIndex === 6 ? 'number' : 'text';
-        input.value = value;
-        input.id = `edit_${originalIndex}_${colIndex}`;
-        input.style.width = '95%';
-        td.appendChild(input);
-    } 
+    td.textContent = value;
+
     row.appendChild(td);
+
 });
 
         // عمود التقرير
