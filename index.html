@@ -874,7 +874,7 @@ async function saveActivityEdit(
     recommendation
 
 ) {
-
+console.log("Saving activity with ID:", activityId);
     console.log("saveActivityEdit STARTED");
 
     try {
@@ -1022,7 +1022,7 @@ function closeEditModal(){
 async function saveModalEdit() {
 
     console.log("saveModalEdit STARTED");
-
+ console.log("edit_id value:", document.getElementById('edit_id').value);
     await saveActivityEdit(
 
         document.getElementById('edit_id').value,
