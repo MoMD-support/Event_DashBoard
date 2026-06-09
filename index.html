@@ -776,7 +776,7 @@ rowData.forEach((value) => {
                     deleteButton.className = 'btn btn-danger';
                     deleteButton.style.cssText = 'padding:5px 10px;font-size:12px;margin-right:5px;background:#dc3545;color:white;border:none;border-radius:4px;cursor:pointer;';
                     deleteButton.innerHTML = '<i class="fas fa-trash"></i> حذف';
-                    deleteButton.onclick = () => confirmDeleteActivity(activity.ID, activity['PDF Link'], activity.attachments_pdf);
+                    deleteButton.onclick = () => confirmDeleteActivity(activity.ID, activity['PDF Link'], activity.attachments_pdf, activity.folder_url);
                     actionsCell.appendChild(deleteButton);
                 }
             row.appendChild(actionsCell);
@@ -1143,7 +1143,8 @@ async function deleteActivity(activityId, pdfLink, attachments) {
                 action: 'deleteActivity',
                 id: activityId,
                 pdfLink: pdfLink || '',
-                attachments: attachments || []
+                attachments: attachments || [],
+                 folderUrl: folderUrl || '' // حذف الفولدر الرئيسي
             })
         });
         
