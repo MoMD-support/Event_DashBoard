@@ -1179,56 +1179,45 @@ async function deleteActivity(activityId, pdfLink, attachments) {
 
 
 // دالة تنزيل البيانات كملف Excel
-// دالة تنزيل البيانات كملف CSV
 function downloadExcel() {
-    if (activitiesData.length === 0) {
+    if (!activitiesData || activitiesData.length === 0) {
         alert('لا توجد بيانات للتنزيل');
         return;
     }
     
-    // الأعمدة المطلوبة للتنزيل
-    const columnsToExport = [
-        'التاريخ', 'المحافظة', 'المخيم', 'تاريخ النشاط', 'مسؤول المخيم',
-        'اسم النشاط', 'وصف النشاط', 'القائمين بالعمل', 'عدد المستفيدين',
-        'التوصيات', 'nextId', 'Status', 'Agree'
-    ];
+    // الأعمدة المطلوبة (بأسماء الأعمدة في الجدول)
+    const columns = ['timestamp', 'gov', 'camp_name', 'Dactive', 'pactive', 'active_name', 'active_dis', 'person', 'no_benfit', 'recomen', 'ID', 'Status', 'Agree'];
     
-    // بناء البيانات
-    const rows = [];
-    
-    // إضافة رأس الأعمدة
-    rows.push(columnsToExport.join(','));
-    
-    // إضافة البيانات
-    for (const activity of activitiesData) {
-        const row = [];
-        for (const col of columnsToExport) {
-            let value = activity[col] || '';
-            // تنظيف القيمة من الفواصل والعلامات
-            value = String(value).replace(/,/g, ' ').replace(/\n/g, ' ');
-            if (col === 'تاريخ النشاط' && value) {
-                value = formatDate(value);
-            }
-            row.push(value);
-        }
-        rows.push(row.join(','));
+    // بناء جدول HTML مؤقت
+    let table = '<table>';
+    table += '<tr>';
+    for (let col of columns) {
+        table += '<th>' + col + '</th>';
     }
+    table += '</tr>';
     
-    // إنشاء الملف
-    const csvContent = rows.join('\n');
-    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    for (let activity of activitiesData) {
+        table += '<tr>';
+        for (let col of columns) {
+            let val = activity[col] || '';
+            if (col === 'Dactive' && val) {
+                val = formatDate(val);
+            }
+            table += '<td>' + val + '</td>';
+        }
+        table += '</tr>';
+    }
+    table += '</table>';
     
-    // تنزيل الملف
+    // تحويل HTML إلى Excel
+    const blob = new Blob([table], { type: 'application/vnd.ms-excel' });
     const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.href = url;
-    link.setAttribute('download', 'activities_data.csv');
-    document.body.appendChild(link);
+    link.href = URL.createObjectURL(blob);
+    link.download = 'activities_data.xls';
     link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    URL.revokeObjectURL(link.href);
     
-    alert('تم تنزيل البيانات بنجاح');
+    alert('تم التنزيل بنجاح');
 }
 
 
