@@ -1179,47 +1179,43 @@ async function deleteActivity(activityId, pdfLink, attachments) {
 
 
 // دالة تنزيل البيانات كملف Excel
+// دالة تنزيل البيانات كملف CSV
 function downloadExcel() {
     if (activitiesData.length === 0) {
         alert('لا توجد بيانات للتنزيل');
         return;
     }
     
-    // الأعمدة المطلوبة للتنزيل 
+    // الأعمدة المطلوبة للتنزيل
     const columnsToExport = [
         'التاريخ', 'المحافظة', 'المخيم', 'تاريخ النشاط', 'مسؤول المخيم',
         'اسم النشاط', 'وصف النشاط', 'القائمين بالعمل', 'عدد المستفيدين',
         'التوصيات', 'nextId', 'Status', 'Agree'
     ];
     
-    // بناء البيانات للتصدير
-    const exportData = [columnsToExport];
+    // بناء البيانات
+    const rows = [];
     
+    // إضافة رأس الأعمدة
+    rows.push(columnsToExport.join(','));
+    
+    // إضافة البيانات
     for (const activity of activitiesData) {
         const row = [];
         for (const col of columnsToExport) {
             let value = activity[col] || '';
-            // تنسيق التاريخ إذا لزم الأمر
+            // تنظيف القيمة من الفواصل والعلامات
+            value = String(value).replace(/,/g, ' ').replace(/\n/g, ' ');
             if (col === 'تاريخ النشاط' && value) {
                 value = formatDate(value);
             }
             row.push(value);
         }
-        exportData.push(row);
+        rows.push(row.join(','));
     }
     
-    // تحويل إلى CSV
-    const csvContent = exportData.map(row => 
-        row.map(cell => {
-            // معالجة الخلايا التي تحتوي على فواصل أو علامات اقتباس يعني مو كلش مهم لان اصلا ماعندي عمود بيه فارزة
-            if (typeof cell === 'string' && (cell.includes(',') || cell.includes('"'))) {
-                return `"${cell.replace(/"/g, '""')}"`;
-            }
-            return cell;
-        }).join(',')
-    ).join('\n');
-    
-    // إضافة  للتعامل مع اللغة العربية
+    // إنشاء الملف
+    const csvContent = rows.join('\n');
     const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
     
     // تنزيل الملف
@@ -1234,7 +1230,6 @@ function downloadExcel() {
     
     alert('تم تنزيل البيانات بنجاح');
 }
-
 
 
 
