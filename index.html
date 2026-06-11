@@ -1242,7 +1242,7 @@ function exportToExcel() {
         'التاريخ': activity.timestamp || '',
         'المحافظة': activity.gov || '',
         'المخيم': activity.camp_name || '',
-        'تاريخ النشاط': activity.Dactive || '',
+         'تاريخ النشاط': activity.Dactive ? formatDate(activity.Dactive) : '',
         'مسؤول المخيم': activity.pactive || '',
         'اسم النشاط': activity.active_name || '',
         'وصف النشاط': activity.active_dis || '',
